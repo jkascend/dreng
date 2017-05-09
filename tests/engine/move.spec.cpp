@@ -10,28 +10,30 @@ TEST_CASE("Initializations", "[Move]") {
 
 TEST_CASE("Add child", "[Move]") {
     Move m(1, 2, 'b', true);
-    Move *child = new Move(2, 3, 'w', false);
+    std::shared_ptr<Move> child(new Move(2, 3, 'w', false));
     m.addChild(child);
 }
 
 TEST_CASE("Get child", "[Move]") {
     Move::Move m(0, 4, 'w', true);
-    Move::Move *child = new Move(9, 12, 'w', true);
-    Move::Move *child2 = new Move(9, 13, 'w', true);
-    m.addChild(child);
+    std::shared_ptr<Move> child1(new Move(9, 12, 'w', true));
+    std::shared_ptr<Move> child2(new Move(9, 13, 'w', true));
+    m.addChild(child1);
     m.addChild(child2);
 
-    Move::Move *fetched1 = m.getChildren()[0];
-    Move::Move *fetched2 = m.getChildren()[1];
+    std::shared_ptr<Move> fetched1 = m.getChildren()[0];
+    std::shared_ptr<Move> fetched2 = m.getChildren()[1];
 
-    REQUIRE(child->getFrom() == fetched1->getFrom());
-    REQUIRE(child2->getFrom() == fetched2->getFrom());
+    REQUIRE(child1.get()->getFrom() == fetched1.get()->getFrom());
+    REQUIRE(child2.get()->getFrom() == fetched2.get()->getFrom());
+    REQUIRE(fetched1.get()->getTo() == 12);
+    REQUIRE(fetched2.get()->getTo() == 13);
 }
 
 TEST_CASE("Has children", "[Move]") {
     Move::Move a(0, 4, 'w', false);
     Move::Move m(0, 4, 'w', false);
-    Move::Move *child = new Move(2, 4, 'w', false);
+    std::shared_ptr<Move> child(new Move(2, 4, 'w', false));
     m.addChild(child);
     REQUIRE(m.hasChildren());
     REQUIRE(!a.hasChildren());
@@ -87,4 +89,32 @@ TEST_CASE("Off board returns -1", "[Move]") {
     REQUIRE(b.getLand() == -1);
     REQUIRE(c.getLand() == -1);
     REQUIRE(d.getLand() == -1);
+}
+
+TEST_CASE("== operator works", "[Move]") {
+    Move::Move a(4, 9, 'w', true);
+    Move::Move b(4, 9, 'w', true);
+
+    REQUIRE(a == b);
+}
+
+TEST_CASE("== operator additional tests" "[Move]") {
+    Move::Move a(4, 9, 'w', false);
+    Move::Move b(4, 9, 'w', false);
+
+    REQUIRE(a == b);
+}
+
+TEST_CASE("!= operator works", "[Move]") {
+    Move::Move a(5, 9, 'w', true);
+    Move::Move b(4, 9, 'w', true);
+    Move::Move c(5, 10, 'w', true);
+    Move::Move d(5, 9, 'b', true);
+    Move::Move e(5, 9, 'w', false);
+
+    REQUIRE(a != b);
+    REQUIRE(a != c);
+    REQUIRE(a != c);
+    REQUIRE(a != d);
+    REQUIRE(a != e);
 }

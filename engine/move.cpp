@@ -13,23 +13,37 @@ Move::Move(short from, short to, char side, bool isJump)
     }
 }
 
-Move::~Move()
-{
-    for (int i = 0; i < Move::_children.size(); i++)
-    {
-        delete Move::_children[i];
-    }
-}
-
+// private
 void Move::computeLand(short from, short to)
 {
     Jump::Jump j(from, to);
     Move::_land = j.computeLanding();
 }
 
+// public
 bool Move::hasChildren()
 {
     return Move::_children.size() > 0;
+}
+
+bool Move::isJump()
+{
+    return Move::_isJump;
+}
+
+bool Move::operator == (const Move &other) const {
+    if (Move::_isJump && Move::_land != other._land)
+    {
+        return false;
+    }
+    return Move::_to == other._to
+        && Move::_from == other._from
+        && Move::_isJump == other._isJump
+        && Move::_side == other._side;
+}
+
+bool Move::operator != (const Move &other) const {
+    return !(*this == other);
 }
 
 char Move::getSide()
@@ -47,17 +61,17 @@ short Move::getTo()
     return Move::_to;
 }
 
-void Move::addChild(Move* m)
-{
-    _children.push_back(m);
-}
-
-std::vector<Move*> Move::getChildren()
-{
-    return Move::_children;
-}
-
 short Move::getLand()
 {
     return Move::_land;
+}
+
+std::vector<std::shared_ptr<Move::Move> > Move::getChildren()
+{
+    return std::move(Move::_children);
+}
+
+void Move::addChild(std::shared_ptr<Move::Move> m)
+{
+    Move::_children.push_back(std::move(m));
 }

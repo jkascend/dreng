@@ -2,25 +2,31 @@
 #define GAME_H
 
 #include <vector>
+#include <memory>
 #include "board.h"
+#include "jump.h"
 #include "move.h"
+
+using namespace std;
 
 class Game
 {
     private:
         Board _board;
-        std::vector<short> getSimpleMoves(short pos, unsigned long allPos, char color, bool isKing);
-        std::vector<short> getJumpMoves(short pos, unsigned long opponentPieces, char color, bool isKing);
-        std::vector<short> getMovesForPos(short pos);
+        vector<short> getSimpleMoves(short pos, unsigned long allPos, char color, bool isKing);
+        vector<short> getJumpMoves(short pos, unsigned long opponentPieces, char color, bool isKing);
+        vector<short> getMovesForPos(short pos);
         bool isOnBoard(short pos);
         bool canJump(short startPos, short enemyPos);
         short getAbsolutePosition(short pos);
-        // Move::Move getJump(short start, short jump, char color, unsigned long opponentPieces);
+        vector<shared_ptr<Move::Move> > getJumpsForPos(short pos, short from, unsigned long opponentPieces, char color, bool isKing);
     public:
         Game();
         Board getBoard();
+        void updateBoardState(char curTurn);
         void updateBoardState(unsigned long black, unsigned long white);
-        std::vector<Move> getCurrentMoves();
+        void updateBoardState(unsigned long black, unsigned long white, char curTurn);
+        vector<shared_ptr<Move::Move> > getCurrentMoves();
 };
 
 #endif

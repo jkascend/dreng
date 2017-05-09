@@ -1,6 +1,6 @@
 #include "../../catch.hpp"
 #include "../../engine/board.h"
-
+#include <iostream>
 TEST_CASE("Initialization", "[Board]") {
     Board::Board b;
     REQUIRE(b.getWhite() == 4095);
@@ -16,8 +16,15 @@ TEST_CASE("Make white king", "[Board]") {
 
 TEST_CASE("Make black king", "[Board]") {
     Board::Board b;
+    // position of king
+    unsigned long expected = (unsigned long)1 << 63;
+    // remaining initial pieces
+    for (size_t i = 20; i < 31; i++)
+    {
+        expected |= (unsigned long)1 << i;
+    }
     b.makeBlackKing(31);
-    REQUIRE(b.getBlack() == (unsigned long)9223372039001210880);
+    REQUIRE(b.getBlack() == expected);
 }
 
 TEST_CASE("White king checks bits before swapping", "[Board]") {
@@ -58,7 +65,10 @@ TEST_CASE("Square is free", "[Board]") {
 
 TEST_CASE("Square is owned by white", "[Board]") {
     Board::Board b;
-    b.setWhite((unsigned long)17179869185);
+    // set bits 1 and 34
+    unsigned long white = 1;
+    white |= (unsigned long)1 << 34;
+    b.setWhite(white);
     REQUIRE(b.whiteIsSquareOwner(0));
     REQUIRE(b.whiteIsSquareOwner(2));
     REQUIRE(!b.whiteIsSquareOwner(1));
@@ -66,7 +76,9 @@ TEST_CASE("Square is owned by white", "[Board]") {
 
 TEST_CASE("Square is owned by black", "[Board]") {
     Board::Board b;
-    b.setBlack((unsigned long)70368878395392);
+    unsigned long black = 1 << 27;
+    black |= (unsigned long)1 << 46;
+    b.setBlack(black);
     REQUIRE(b.blackIsSquareOwner(27));
     REQUIRE(b.blackIsSquareOwner(14));
     REQUIRE(!b.blackIsSquareOwner(31));
