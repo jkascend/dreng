@@ -3,3 +3,5 @@
 *.dSYM
 *.gch
 .vscode/settings.json
+*.a
+example
