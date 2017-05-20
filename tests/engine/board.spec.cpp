@@ -1,6 +1,7 @@
 #include "../../catch.hpp"
 #include "../../engine/board.h"
-#include <iostream>
+#include "../../engine/move.h"
+
 TEST_CASE("Initialization", "[Board]") {
     Board::Board b;
     REQUIRE(b.getWhite() == 4095);
@@ -91,4 +92,106 @@ TEST_CASE("Square is owned by opponent", "[Board]") {
     b.setCurMove('w');
     REQUIRE(b.opponentIsSquareOwner(28));
     REQUIRE(!b.opponentIsSquareOwner(1));
+}
+
+TEST_CASE("Perform move checks current square is XOR man/king", "[Board]") {
+    Board::Board b;
+    b.setBlack(b.getBlack() | (unsigned long)1 << 52);
+    std::shared_ptr<Move::Move> m(new Move(20, 17, 'b', false));
+    REQUIRE_THROWS(b.performMove(m));
+}
+
+TEST_CASE("Perform move checks current square is XOR white man/king", "[Board]") {
+    Board::Board b;
+    b.setWhite(b.getWhite() | (unsigned long)1 << 40);
+    std::shared_ptr<Move::Move> m(new Move(8, 12, 'w', false));
+    b.setCurMove('w');
+    REQUIRE_THROWS(b.performMove(m));
+}
+
+TEST_CASE("Perform move checks destination square is completely unoccupied by black man", "[Board]") {
+    Board::Board b;
+    std::shared_ptr<Move::Move> m(new Move(24, 20, 'b', false));
+    REQUIRE_THROWS(b.performMove(m));
+}
+
+TEST_CASE("Perform move checks destination square is completely unoccupied by black king", "[Board]") {
+    Board::Board b;
+    b.setBlack(b.getBlack() | (unsigned long)1 << 48);
+    std::shared_ptr<Move::Move> m(new Move(20, 16, 'b', false));
+    REQUIRE_THROWS(b.performMove(m));
+}
+
+TEST_CASE("Perform move checks destination square is completely unoccupied by white man", "[Board]") {
+    Board::Board b;
+    b.setCurMove('w');
+    std::shared_ptr<Move::Move> m(new Move(5, 9, 'w', false));
+    REQUIRE_THROWS(b.performMove(m));
+}
+
+TEST_CASE("Perform move checks destination square is completely unoccupied by white king", "[Board]") {
+    Board::Board b;
+    b.setCurMove('w');
+    b.setWhite(b.getWhite() | (unsigned long)1 << 44);
+    std::shared_ptr<Move::Move> m(new Move(9, 12, 'w', false));
+    REQUIRE_THROWS(b.performMove(m));
+}
+
+TEST_CASE("Perform move sets proper bits for black", "[Board]") {
+    Board::Board b;
+    unsigned long expectedBlack = b.getBlack();
+    unsigned long expectedWhite = b.getWhite();
+    expectedBlack ^= (1 << 20);
+    expectedBlack |= (1 << 17);
+    std::shared_ptr<Move::Move> m(new Move(20, 17, 'b', false));
+    b.performMove(m);
+    REQUIRE(expectedBlack == b.getBlack());
+    REQUIRE(expectedWhite == b.getWhite());
+}
+
+TEST_CASE("Perform move sets proper bits for white", "[Board]") {
+    Board::Board b;
+    b.setCurMove('w');
+    unsigned long expectedBlack = b.getBlack();
+    unsigned long expectedWhite = b.getWhite();
+    expectedWhite ^= (1 << 9);
+    expectedWhite |= (1 << 12);
+    std::shared_ptr<Move::Move> m(new Move(9, 12, 'w', false));
+    b.performMove(m);
+    REQUIRE(expectedWhite == b.getWhite());
+    REQUIRE(expectedBlack == b.getBlack());
+}
+
+TEST_CASE("Perform move sets proper bits for black king", "[Board]") {
+    Board::Board b;
+    unsigned long expectedBlack = (unsigned long)1 << 49;
+    b.setBlack((unsigned long)1 << 52);
+    std::shared_ptr<Move::Move> m(new Move(20, 17, 'b', false));
+    b.performMove(m);
+    REQUIRE(expectedBlack == b.getBlack());
+}
+
+TEST_CASE("Perform move sets proper bits for white king", "[Board]") {
+    Board::Board b;
+    unsigned long expectedWhite = (unsigned long)1 << 45;
+    b.setWhite((unsigned long)1 << 41);
+    b.setCurMove('w');
+    std::shared_ptr<Move::Move> m(new Move(9, 13, 'w', false));
+    b.performMove(m);
+    REQUIRE(expectedWhite == b.getWhite());
+}
+
+TEST_CASE("Perform move checks move corresponds to current turn", "[Board]") {
+    Board::Board b;
+
+    std::shared_ptr<Move::Move> m(new Move(9, 12, 'w', false));
+
+    REQUIRE_THROWS(b.performMove(m));
+}
+
+TEST_CASE("Board updates current move after move", "[Board]") {
+    Board::Board b;
+    std::shared_ptr<Move::Move> m(new Move(20, 16, 'b', false));
+    b.performMove(m);
+    REQUIRE(b.getCurMove() == 'w');
 }

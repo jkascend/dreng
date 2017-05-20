@@ -1,6 +1,8 @@
 #ifndef BOARD_H
 #define BOARD_H
 
+#include "move.h"
+
 class Board
 {
     private:
@@ -27,6 +29,7 @@ class Board
         void setCurMove(char c);
         void setBlack(unsigned long b);
         void setWhite(unsigned long w);
+        void performMove(std::shared_ptr<Move> move);
 };
 
 #endif

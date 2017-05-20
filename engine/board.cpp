@@ -132,3 +132,75 @@ void Board::setWhite(unsigned long w)
 {
     Board::_white = w;
 }
+
+void Board::performMove(std::shared_ptr<Move> move)
+{
+    // identify bit to change
+    short from = move->getFrom();
+    short getTo = move->getTo();
+    bool isJump = move->isJump();
+
+    // make sure move corresponds to current turn
+    if (Board::_curMove != move->getSide())
+    {
+        throw 27;
+    }
+    unsigned long *curSide = move->getSide() == 'b' ? &(Board::_black) : &(Board::_white);
+    unsigned long *opponent = move->getSide() == 'b' ? &(Board::_white) : &(Board::_black);
+
+    // if regular move, check man bit and king bit are xor, flip whichever is set to
+    // 0, check dest man/king bits are 0 and turn on whichever should be set
+    if (move->isJump())
+    {
+
+    }
+    else
+    {
+        // check only man/king occupies from pos
+        // fail for pos 1: 010
+        //                 110
+        // pass for pos 1: 001
+        //                 010
+        if (*curSide & ((unsigned long)1 << move->getFrom())
+            &&
+            *curSide & ((unsigned long)1 << (move->getFrom() + 32)))
+            {
+                throw 25;
+            }
+        // check destination is unoccupied
+        // fail for pos 1: 010
+        //                 001
+        // pass for pos 1: 001
+        //                 100
+        if ((*curSide & ((unsigned long)1 << move->getTo())) +
+            (*curSide & ((unsigned long)1 << (move->getTo() + 32))))
+            {
+                throw 26;
+            }
+        
+        bool isKing = false;
+        // XOR current pos to 0
+        if (*curSide & (1 << move->getFrom()))
+        {
+            *curSide ^= (1 << move->getFrom());
+        }
+        else
+        {
+            isKing = true;
+            *curSide ^= ((unsigned long)1 << (move->getFrom() + 32));
+        }
+        
+
+        // OR dest to 1
+        if (isKing)
+        {
+            *curSide |= ((unsigned long)1 << (move->getTo() + 32));
+        }
+        else
+        {
+            *curSide |= (1 << move->getTo());
+        }
+    }
+
+    Board::_curMove = move->getSide() == 'b' ? 'w' : 'b';
+}
