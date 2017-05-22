@@ -13,6 +13,11 @@ class Board
         bool kingPositionIsValid(unsigned long l, int pos);
         bool squareIndexOutOfRange(short square);
         bool squareIsOwnedByColor(short square, char color);
+        bool onlyManOrKingOccupiesSquare(short index, unsigned long *board);
+        bool squareIsClear(short square);
+        void moveTowardBit(short from, short to, unsigned long *board);
+        void turnOffManAndKingBits(short target, unsigned long *board);
+
     public:
         Board();
 
@@ -20,6 +25,7 @@ class Board
         bool opponentIsSquareOwner(short square);
         bool squareIsFree(short square);
         bool whiteIsSquareOwner(short square);
+        bool boardStateIsValid();
         char getCurMove();
         unsigned long getBlack();
         unsigned long getFreePos();

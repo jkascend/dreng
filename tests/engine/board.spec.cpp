@@ -195,3 +195,115 @@ TEST_CASE("Board updates current move after move", "[Board]") {
     b.performMove(m);
     REQUIRE(b.getCurMove() == 'w');
 }
+
+TEST_CASE("Board state is valid returns true", "[Board]") {
+    Board::Board b;
+    REQUIRE(b.boardStateIsValid());
+}
+
+TEST_CASE("Board state is valid returns false for black man and king on at same pos", "[Board]") {
+    Board::Board b;
+    b.setBlack(b.getBlack() | ((unsigned long)1 << 60));
+    REQUIRE(b.boardStateIsValid() == false);
+}
+
+TEST_CASE("Board state is valid returns false for white man and king on at same pos", "[Board]") {
+    Board::Board b;
+    b.setWhite(b.getWhite() | ((unsigned long)1 << 37));
+    REQUIRE(b.boardStateIsValid() == false);
+}
+
+TEST_CASE("Perform move throws when from pos is on for black man/king", "[Board]") {
+    Board::Board b;
+    b.setBlack(b.getBlack() | ((unsigned long)1 << 52));
+    b.setWhite(1 << 17);
+    std::shared_ptr<Move> m(new Move(20, 17, 'b', true));
+    REQUIRE_THROWS(b.performMove(m));
+}
+
+TEST_CASE("Perform move throws when from pos is on for white man/king", "[Board]") {
+    Board::Board b;
+    b.setCurMove('w');
+    b.setWhite(b.getWhite() | ((unsigned long)1 << 42));
+    b.setWhite(1 << 17);
+    b.setBlack(1 << 13);
+    std::shared_ptr<Move> m(new Move(10, 13, 'w', true));
+    REQUIRE_THROWS(b.performMove(m));
+}
+
+TEST_CASE("Perform move throws if black jump landing square occupied by friendly man", "[Board]") {
+    Board::Board b;
+    b.setWhite(1 << 17);
+    b.setBlack(b.getBlack() | 1 << 13);
+    std::shared_ptr<Move> m(new Move(20, 17, 'b', true));
+    REQUIRE_THROWS(b.performMove(m));
+}
+
+TEST_CASE("Perform move throws if black jump landing square occupied by friendly king", "[Board]") {
+    Board::Board b;
+    b.setWhite(1 << 17);
+    b.setBlack(b.getBlack() | (unsigned long)1 << 45);
+    std::shared_ptr<Move> m(new Move(20, 17, 'b', true));
+    REQUIRE_THROWS(b.performMove(m));
+}
+
+TEST_CASE("Perform move throws if white jump landing square occupied by friendly man", "[Board]") {
+    Board::Board b;
+    b.setBlack(1 << 13);
+    b.setWhite(b.getWhite() | 1 << 17);
+    b.setCurMove('w');
+    std::shared_ptr<Move> m(new Move(10, 13, 'w', true));
+    REQUIRE_THROWS(b.performMove(m));
+}
+
+TEST_CASE("Perform move throws if white jump landing square occupied by friendly king", "[Board]") {
+    Board::Board b;
+    b.setBlack(1 << 13);
+    b.setWhite(b.getWhite() | (unsigned long) 1 << 49);
+    b.setCurMove('w');
+    std::shared_ptr<Move> m(new Move(10, 13, 'w', true));
+    REQUIRE_THROWS(b.performMove(m));
+}
+
+TEST_CASE("Perform move throws if black jump landing square occupied by enemy man", "[Board]") {
+    Board::Board b;
+    b.setWhite(1 << 13 | 1 << 17);
+    std::shared_ptr<Move> m(new Move(20, 17, 'b', true));
+    REQUIRE_THROWS(b.performMove(m));
+}
+
+TEST_CASE("Perform move throws if black jump landing square occupied by enemy king", "[Board]") {
+    Board::Board b;
+    b.setWhite(1 << 17 | (unsigned long)1 << 45);
+    std::shared_ptr<Move> m(new Move(20, 17, 'b', true));
+    REQUIRE_THROWS(b.performMove(m));
+}
+
+TEST_CASE("Perform move throws if white jump landing square occupied by enemy man", "[Board]") {
+    Board::Board b;
+    b.setBlack(1 << 17 | 1 << 13);
+    b.setCurMove('w');
+    std::shared_ptr<Move> m(new Move(10, 13, 'w', true));
+    REQUIRE_THROWS(b.performMove(m));
+}
+
+TEST_CASE("Perform move throws if white jump landing square occupied by enemy king", "[Board]") {
+    Board::Board b;
+    b.setBlack(1 << 13 | (unsigned long) 1 << 49);
+    b.setCurMove('w');
+    std::shared_ptr<Move> m(new Move(10, 13, 'w', true));
+    REQUIRE_THROWS(b.performMove(m));
+}
+
+
+
+// write tests for:
+// TEST_CASE("Jump move throws if man and king bits set for \"from\" position", "[Board]") {
+//     Board::Board b;
+//     b.setBlack()
+// }
+//       DONE          1. throw if not exactly 1 of target bits set
+//       DONE          2. throw if land bits not == 0
+//                 3. throw if jump move children has more than 1, consider adding "selection" field to move class
+//                 4-5. check that "simple" jump works for black/white
+//                 6-7. check that "chained" jump works for black/white
