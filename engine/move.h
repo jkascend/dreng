@@ -11,6 +11,7 @@ class Move
         char _side;
         short _from, _to, _land;
         std::vector<std::shared_ptr<Move::Move> > _children;
+        std::shared_ptr<Move> _chosenChild;
         void computeLand(short from, short to);
     public:
         Move(short from, short to, char side, bool isJump);
@@ -24,7 +25,9 @@ class Move
         short getTo();
         short getLand();
         std::vector<std::shared_ptr<Move::Move> > getChildren();
+        std::shared_ptr<Move::Move> getChildMove();
         void addChild(std::shared_ptr<Move::Move> m);
+        void setChildMove(std::shared_ptr<Move::Move> m);
 };
 
 #endif

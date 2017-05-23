@@ -71,7 +71,17 @@ std::vector<std::shared_ptr<Move::Move> > Move::getChildren()
     return std::move(Move::_children);
 }
 
+std::shared_ptr<Move::Move> Move::getChildMove()
+{
+    return Move::_chosenChild;
+}
+
 void Move::addChild(std::shared_ptr<Move::Move> m)
 {
     Move::_children.push_back(std::move(m));
+}
+
+void Move::setChildMove(std::shared_ptr<Move::Move> m)
+{
+    Move::_chosenChild = m;
 }

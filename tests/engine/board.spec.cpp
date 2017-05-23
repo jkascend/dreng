@@ -295,15 +295,90 @@ TEST_CASE("Perform move throws if white jump landing square occupied by enemy ki
     REQUIRE_THROWS(b.performMove(m));
 }
 
+TEST_CASE("Single jump works for black man", "[Board]") {
+    Board::Board b;
+    b.setBlack(1 << 20);
+    b.setWhite(1 << 17);
+    std::shared_ptr<Move> m(new Move(20, 17, 'b', true));
+    b.performMove(m);
+    REQUIRE(b.getBlack() == 8192);
+    REQUIRE(b.getWhite() == 0);
+}
 
+TEST_CASE("Simple jump works for white man", "[Board]") {
+    Board::Board b;
+    b.setBlack(1 << 20);
+    b.setWhite(1 << 17);
+    b.setCurMove('w');
+    std::shared_ptr<Move> m(new Move(17, 20, 'w', true));
+    b.performMove(m);
+    REQUIRE(b.getBlack() == 0);
+    REQUIRE(b.getWhite() == (1 << 24));
+}
 
-// write tests for:
-// TEST_CASE("Jump move throws if man and king bits set for \"from\" position", "[Board]") {
-//     Board::Board b;
-//     b.setBlack()
-// }
-//       DONE          1. throw if not exactly 1 of target bits set
-//       DONE          2. throw if land bits not == 0
-//                 3. throw if jump move children has more than 1, consider adding "selection" field to move class
-//                 4-5. check that "simple" jump works for black/white
-//                 6-7. check that "chained" jump works for black/white
+TEST_CASE("Simple jump works for black king", "[Board]") {
+    Board::Board b;
+    b.setBlack((unsigned long)1 << 52);
+    b.setWhite(1 << 17);
+    std::shared_ptr<Move> m(new Move(20, 17, 'b', true));
+    b.performMove(m);
+    REQUIRE(b.getBlack() == ((unsigned long)1 << 45));
+    REQUIRE(b.getWhite() == 0);
+}
+
+TEST_CASE("Simple jump works for white king", "[Board]") {
+    Board::Board b;
+    b.setBlack(1 << 20);
+    b.setWhite((unsigned long)1 << 49);
+    b.setCurMove('w');
+    std::shared_ptr<Move> m(new Move(17, 20, 'w', true));
+    b.performMove(m);
+    REQUIRE(b.getBlack() == 0);
+    REQUIRE(b.getWhite() == (unsigned long)1 << 56);
+}
+
+TEST_CASE("Complex jump works for black man", "[Board]") {
+    Board::Board b;
+    b.setBlack(1 << 20);
+    b.setWhite(1 << 17 | 1 << 10);
+    std::shared_ptr<Move> m(new Move(20, 17, 'b', true));
+    m->setChildMove(std::shared_ptr<Move>(new Move(13, 10, 'b', true)));
+    b.performMove(m);
+    REQUIRE(b.getBlack() == 1 << 6);
+    REQUIRE(b.getWhite() == 0);
+}
+
+TEST_CASE("Complex jump works for white man", "[Board]") {
+    Board::Board b;
+    b.setBlack((unsigned long)1 << 45 | 1 << 20);
+    b.setWhite(1 << 10);
+    b.setCurMove('w');
+    std::shared_ptr<Move> m(new Move(10, 13, 'w', true));
+    m->setChildMove(std::shared_ptr<Move>(new Move(17, 20, 'w', true)));
+    b.performMove(m);
+    REQUIRE(b.getBlack() == 0);
+    REQUIRE(b.getWhite() == (1 << 24));
+}
+
+TEST_CASE("Complex jump works for black king", "[Board]") {
+    Board::Board b;
+    b.setBlack((unsigned long)1 << 42);
+    b.setWhite(1 << 20 | (unsigned long)1 << 45);
+    std::shared_ptr<Move> m(new Move(10, 13, 'b', true));
+    m->setChildMove(std::shared_ptr<Move>(new Move(17, 20, 'b', true)));
+    b.performMove(m);
+    REQUIRE(b.getBlack() == ((unsigned long)1 << 56));
+    REQUIRE(b.getWhite() == 0);
+}
+
+TEST_CASE("Complex jump works for white king", "[Board]") {
+    Board::Board b;
+    b.setBlack(1 << 20 | (unsigned long)1 << 45);
+    b.setWhite((unsigned long)1 << 56);
+    b.setCurMove('w');
+    std::shared_ptr<Move> m(new Move(24, 20, 'w', true));
+    m->setChildMove(std::shared_ptr<Move>(new Move(17, 13, 'w', true)));
+    b.performMove(m);
+    REQUIRE(b.getBlack() == 0);
+    REQUIRE(b.getWhite() == (unsigned long)1 << 42);
+}

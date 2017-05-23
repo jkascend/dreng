@@ -222,7 +222,7 @@ void Board::performMove(std::shared_ptr<Move> move)
         Board::moveTowardBit(move->getFrom(), move->getLand(), curSide);
 
         // turn off jumped bit
-        Board::turnOffManAndKingBits(move->getLand(), opponent);
+        Board::turnOffManAndKingBits(move->getTo(), opponent);
 
         // turn off "from"" bit
         Board::turnOffManAndKingBits(move->getFrom(), curSide);
@@ -230,6 +230,11 @@ void Board::performMove(std::shared_ptr<Move> move)
         if (move->getChildren().size() > 1)
         {
             throw 31;
+        }
+
+        if (move->getChildMove())
+        {
+            Board::performMove(move->getChildMove());
         }
     }
     else

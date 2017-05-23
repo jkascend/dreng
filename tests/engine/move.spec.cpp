@@ -118,3 +118,10 @@ TEST_CASE("!= operator works", "[Move]") {
     REQUIRE(a != d);
     REQUIRE(a != e);
 }
+
+TEST_CASE("Get/Set for chosen move works", "[Move]") {
+    Move::Move parent(5, 9, 'w', true);
+    std::shared_ptr<Move::Move> child(new Move::Move(12, 17, 'w', false));
+    parent.setChildMove(child);
+    REQUIRE(parent.getChildMove() == child);
+}
