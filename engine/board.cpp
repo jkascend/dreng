@@ -113,7 +113,7 @@ unsigned long Board::getWhite()
     return Board::_white;
 }
 
-void Board::makeBlackKing(int pos)
+void Board::makeBlackKing(short pos)
 {
     if (Board::kingPositionIsValid(Board::_black, pos))
     {
@@ -122,7 +122,7 @@ void Board::makeBlackKing(int pos)
     }
 }
 
-void Board::makeWhiteKing(int pos)
+void Board::makeWhiteKing(short pos)
 {
     if (Board::kingPositionIsValid(Board::_white, pos))
     {
@@ -165,6 +165,25 @@ void Board::turnOffManAndKingBits(short target, unsigned long *board)
 {
     *board &= ~(1 << target);
     *board &= ~((unsigned long)1 << (target + 32));
+}
+
+void Board::makeKingIfValid(std::shared_ptr<Move> move)
+{
+    short dest = move->isJump() ? move->getLand() : move->getTo();
+    if (move->getSide() == 'b')
+    {
+        if (dest / 8 == 0 && dest % 8 < 4)
+        {
+            Board::makeBlackKing(dest);
+        }
+    }
+    else if (move->getSide() == 'w')
+    {
+        if (dest / 8 == 3 && dest % 8 > 3)
+        {
+            Board::makeWhiteKing(dest);
+        }
+    }
 }
 
 bool Board::onlyManOrKingOccupiesSquare(short index, unsigned long *board)
@@ -258,4 +277,5 @@ void Board::performMove(std::shared_ptr<Move> move)
     }
 
     Board::_curMove = move->getSide() == 'b' ? 'w' : 'b';
+    Board::makeKingIfValid(move);
 }

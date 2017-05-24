@@ -17,6 +17,7 @@ class Board
         bool squareIsClear(short square);
         void moveTowardBit(short from, short to, unsigned long *board);
         void turnOffManAndKingBits(short target, unsigned long *board);
+        void makeKingIfValid(std::shared_ptr<Move> move);
 
     public:
         Board();
@@ -30,8 +31,8 @@ class Board
         unsigned long getBlack();
         unsigned long getFreePos();
         unsigned long getWhite();
-        void makeBlackKing(int pos);
-        void makeWhiteKing(int pos);
+        void makeBlackKing(short pos);
+        void makeWhiteKing(short pos);
         void setCurMove(char c);
         void setBlack(unsigned long b);
         void setWhite(unsigned long w);

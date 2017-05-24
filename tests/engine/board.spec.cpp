@@ -382,3 +382,45 @@ TEST_CASE("Complex jump works for white king", "[Board]") {
     REQUIRE(b.getBlack() == 0);
     REQUIRE(b.getWhite() == (unsigned long)1 << 42);
 }
+
+TEST_CASE("Simple move for black man ending in king row makes it a king", "[Board]") {
+    Board::Board b;
+    b.setBlack(1 << 5);
+    b.setWhite(1 << 21);
+    std::shared_ptr<Move> m(new Move(5, 2, 'b', false));
+    b.performMove(m);
+    REQUIRE(b.getBlack() == (unsigned long)1 << 34);
+    REQUIRE(b.getWhite() == 1 << 21);
+}
+
+TEST_CASE("Simple move for white man ending in king row makes it a king", "[Board]") {
+    Board::Board b;
+    b.setBlack(1);
+    b.setWhite(1 << 25);
+    b.setCurMove('w');
+    std::shared_ptr<Move> m(new Move(25, 28, 'w', false));
+    b.performMove(m);
+    REQUIRE(b.getBlack() == 1);
+    REQUIRE(b.getWhite() == (unsigned long)1 << 60);
+}
+
+TEST_CASE("Jump move for white man ending in king row makes it a king", "[Board]") {
+    Board::Board b;
+    b.setBlack(1 << 26);
+    b.setWhite(1 << 22);
+    b.setCurMove('w');
+    std::shared_ptr<Move> m(new Move(22, 26, 'w', true));
+    b.performMove(m);
+    REQUIRE(b.getBlack() == 0);
+    REQUIRE(b.getWhite() == (unsigned long)1 << 61);
+}
+
+TEST_CASE("Jump move for black man ending in king row makes it a king", "[Board]") {
+    Board::Board b;
+    b.setBlack(1 << 9);
+    b.setWhite(1 << 5);
+    std::shared_ptr<Move> m(new Move(9, 5, 'b', true));
+    b.performMove(m);
+    REQUIRE(b.getBlack() == (unsigned long)1 << 34);
+    REQUIRE(b.getWhite() == 0);
+}
