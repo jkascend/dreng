@@ -7,19 +7,17 @@
 #include "jump.h"
 #include "move.h"
 
-using namespace std;
-
 class Game
 {
     private:
         Board _board;
-        vector<short> getSimpleMoves(short pos, unsigned long allPos, char color, bool isKing);
-        vector<short> getJumpMoves(short pos, unsigned long opponentPieces, char color, bool isKing);
-        vector<short> getMovesForPos(short pos);
+        std::vector<short> getSimpleMoves(short pos, unsigned long allPos, char color, bool isKing);
+        std::vector<short> getJumpMoves(short pos, unsigned long opponentPieces, char color, bool isKing);
+        std::vector<short> getMovesForPos(short pos);
         bool isOnBoard(short pos);
         bool canJump(short startPos, short enemyPos);
         short getAbsolutePosition(short pos);
-        vector<shared_ptr<Move::Move> > getJumpsForPos(short pos, short from, unsigned long opponentPieces, char color, bool isKing);
+        std::vector<std::shared_ptr<Move::Move> > getJumpsForPos(short pos, short from, unsigned long opponentPieces, char color, bool isKing);
     public:
         Game();
         Board getBoard();
@@ -27,7 +25,7 @@ class Game
         void updateBoardState(char curTurn);
         void updateBoardState(unsigned long black, unsigned long white);
         void updateBoardState(unsigned long black, unsigned long white, char curTurn);
-        vector<shared_ptr<Move::Move> > getCurrentMoves();
+        std::vector<std::shared_ptr<Move::Move> > getCurrentMoves();
 };
 
 #endif

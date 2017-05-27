@@ -15,9 +15,9 @@ bool Game::isOnBoard(short pos)
     return pos >= 0 && pos < 32;
 }
 
-vector<short> Game::getMovesForPos(short pos)
+std::vector<short> Game::getMovesForPos(short pos)
 {
-    vector<short> toCheck;
+    std::vector<short> toCheck;
     if ((pos % 8 == 0) || ((pos - 7) % 8 == 0))
     {
         toCheck.push_back(pos + 4);
@@ -114,15 +114,15 @@ std::vector<short> Game::getSimpleMoves(short pos, unsigned long allPos, char co
     return retVal;
 }
 
-vector<shared_ptr<Move::Move> > Game::getJumpsForPos(short pos, short lastJumpPos, unsigned long opponentPieces, char color, bool isKing)
+std::vector<std::shared_ptr<Move::Move> > Game::getJumpsForPos(short pos, short lastJumpPos, unsigned long opponentPieces, char color, bool isKing)
 {
-    vector<shared_ptr<Move::Move> > retVal;
-    vector<short> jumpMoves = Game::getJumpMoves(pos, opponentPieces, color, isKing);
+    std::vector<std::shared_ptr<Move::Move> > retVal;
+    std::vector<short> jumpMoves = Game::getJumpMoves(pos, opponentPieces, color, isKing);
     for (int i = 0; i < jumpMoves.size(); i++)
     {
         if (jumpMoves[i] == lastJumpPos) continue;
-        shared_ptr<Move::Move> jump(new Move(pos, jumpMoves[i], color, true));
-        vector<shared_ptr<Move::Move> > childMoves = Game::getJumpsForPos(jump->getLand(), jump->getTo(), opponentPieces, color, isKing);
+        std::shared_ptr<Move::Move> jump(new Move(pos, jumpMoves[i], color, true));
+        std::vector<std::shared_ptr<Move::Move> > childMoves = Game::getJumpsForPos(jump->getLand(), jump->getTo(), opponentPieces, color, isKing);
         for (int j = 0; j < childMoves.size(); j++)
         {
             jump->addChild(childMoves[j]);
@@ -132,9 +132,9 @@ vector<shared_ptr<Move::Move> > Game::getJumpsForPos(short pos, short lastJumpPo
     return retVal;
 }
 
-vector<shared_ptr<Move::Move> > Game::getCurrentMoves()
+std::vector<std::shared_ptr<Move::Move> > Game::getCurrentMoves()
 {
-    vector<shared_ptr<Move::Move> > allMoves;
+    std::vector<std::shared_ptr<Move::Move> > allMoves;
     char curTurn = Game::_board.getCurMove();
     unsigned long curPieces = curTurn == 'b' ? Game::_board.getBlack() : Game::_board.getWhite();
     unsigned long opponentPieces = curTurn == 'b' ? Game::_board.getWhite() : Game::_board.getBlack();
