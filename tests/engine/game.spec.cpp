@@ -229,3 +229,21 @@ TEST_CASE("Multiple chained jumps for white king", "[Game]") {
     REQUIRE(*(gcB) == gChild2);
     REQUIRE(*(gcC) == gChild3);
 }
+
+TEST_CASE("Ends game if no moves are available", "[Game]") {
+    Game::Game g;
+    g.updateBoardState(1 << 4, 1 | 1 << 1);
+    REQUIRE(g.isGameOver());
+}
+
+TEST_CASE("Ends game if no pieces available for black", "[Game]") {
+    Game::Game g;
+    g.updateBoardState(0, 1);
+    REQUIRE(g.isGameOver());
+}
+
+TEST_CASE("Ends game if no pieces available for white", "[Game]") {
+    Game::Game g;
+    g.updateBoardState(1, 0);
+    REQUIRE(g.isGameOver());
+}

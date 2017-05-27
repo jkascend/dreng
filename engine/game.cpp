@@ -188,3 +188,11 @@ void Game::updateBoardState(unsigned long black, unsigned long white, char curTu
     Game::_board.setBlack(black);
     Game::_board.setCurMove(curTurn);
 }
+
+bool Game::isGameOver()
+{
+    return
+        !Game::_board.getBlack()
+        || !Game::_board.getWhite()
+        || !Game::getCurrentMoves().size();
+}

@@ -23,6 +23,7 @@ class Game
     public:
         Game();
         Board getBoard();
+        bool isGameOver();
         void updateBoardState(char curTurn);
         void updateBoardState(unsigned long black, unsigned long white);
         void updateBoardState(unsigned long black, unsigned long white, char curTurn);
