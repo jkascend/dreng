@@ -3,14 +3,19 @@
 
 #include <vector>
 #include <memory>
+#include <string>
 #include "board.h"
 #include "jump.h"
 #include "move.h"
+#include "player.h"
 
 class Game
 {
     private:
         Board _board;
+        Player _blackPlayer;
+        Player _whitePlayer;
+
         std::vector<short> getSimpleMoves(short pos, unsigned long allPos, char color, bool isKing);
         std::vector<short> getJumpMoves(short pos, unsigned long opponentPieces, char color, bool isKing);
         std::vector<short> getMovesForPos(short pos);
@@ -20,6 +25,7 @@ class Game
         std::vector<std::shared_ptr<Move::Move> > getJumpsForPos(short pos, short from, unsigned long opponentPieces, char color, bool isKing);
     public:
         Game();
+        Game(std::string bPlayerName, std::string wPlayerName);
         Board getBoard();
         bool isGameOver();
         void updateBoardState(char curTurn);

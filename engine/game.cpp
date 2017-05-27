@@ -1,6 +1,11 @@
 #include "game.h"
 
-Game::Game()
+Game::Game() : _blackPlayer("black"), _whitePlayer("white")
+{
+    Game::_board = Board::Board();
+}
+
+Game::Game(std::string bPlayerName, std::string wPlayerName) : _blackPlayer(bPlayerName), _whitePlayer(wPlayerName)
 {
     Game::_board = Board::Board();
 }

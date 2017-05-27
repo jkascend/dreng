@@ -4,8 +4,8 @@ LIBNM = libDreng.a
 CMPARG = -c
 DEBUG = -g
 OBJS = board.o game.o jump.o move.o
-DEPS = engine/board.cpp engine/game.cpp engine/jump.cpp engine/move.cpp
-TEST = test.cpp $(DEPS) tests/engine/board.spec.cpp tests/engine/game.spec.cpp tests/engine/move.spec.cpp
+DEPS = engine/board.cpp engine/game.cpp engine/jump.cpp engine/move.cpp engine/player.cpp
+TEST = test.cpp $(DEPS) tests/engine/board.spec.cpp tests/engine/game.spec.cpp tests/engine/move.spec.cpp tests/engine/player.spec.cpp
 
 dreng: $(DEPS)
 	$(CC) $(CMPARG) $(DEPS)
